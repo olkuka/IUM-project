@@ -1,0 +1,120 @@
+@import url(http://weloveiconfonts.com/api/?family=entypo);
+@import url(https://fonts.googleapis.com/css?family=Nunito);
+html {
+  height: 100%;
+}
+
+body {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  background: #eef2f6 url(https://static.tumblr.com/26l8vc7/q7Glbweh4/bg.jpg);
+  font-family: Nunito;
+  color: #888;
+}
+
+a {
+  color: #51aded;
+}
+
+.fileUpload {
+  /*
+  &:before, &:after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    @include scallop($formBgColor);
+  }
+  &:after {
+    top: auto;
+    bottom: -20px;
+    background-position: 0 -15px;
+  }*/
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+  background-color: #eef2f6;
+  width: 300px;
+  padding: 30px;
+}
+.fileUpload h4 {
+  font-size: 18px;
+  font-weight: normal;
+  margin: 20px 0 5px 0;
+  padding: 0;
+}
+.fileUpload progress {
+  appearance: none;
+  border: 0;
+  width: 100%;
+  height: 15px;
+  color: #51aded;
+  background-color: #ccc;
+  border-radius: 10px;
+}
+.fileUpload progress::-moz-progress-bar {
+  background-color: #51aded;
+  border-radius: 10px;
+}
+.fileUpload progress::-webkit-progress-bar {
+  background-color: #ccc;
+  border-radius: 10px;
+}
+.fileUpload progress::-webkit-progress-value {
+  position: relative;
+  background-color: #51aded;
+  border-radius: 10px;
+}
+.fileUpload p {
+  font-size: 80%;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+.fileUpload .fileElem {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 300px;
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  z-index: 1;
+  height: 50px;
+  opacity: 0;
+  cursor: pointer;
+}
+.fileUpload .fileElem:focus {
+  outline: none;
+}
+.fileUpload .fileSelect {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  display: inline-block;
+  text-align: left;
+  padding-left: 110px;
+  width: 100%;
+  height: 50px;
+  background-color: #51aded;
+  border-radius: 3px;
+  border-bottom: 3px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+  font-size: 20px;
+  line-height: 50px;
+  color: white;
+}
+.fileUpload .fileSelect:before {
+  font-family: Entypo;
+  content: "\E711";
+  position: absolute;
+  top: 0;
+  left: 80px;
+}
