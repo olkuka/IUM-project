@@ -42,7 +42,7 @@ def upload_file():
 @app.route('/run')
 def run():
     # Use pickle to load in the pre-trained model.
-    with open(f'model/sessions.pkl', 'rb') as f:
+    with open(f'model/grid_sessions.pkl', 'rb') as f:
         model = pickle.load(f)
 
     products = pd.read_json(os.path.join(UPLOAD_FOLDER, "products.jsonl"), lines=True)
@@ -54,18 +54,24 @@ def run():
 
     shop_df["discount_price"] = (shop_df["price"] * shop_df["offered_discount"])
 
-    shop_df = shop_df[shop_df.columns[~shop_df.columns.isin(["product_name", "purchase_id", "name", "street", "timestamp", "purchase_id_isnan"])]]
+    shop_df = shop_df[shop_df.columns[
+        ~shop_df.columns.isin(["product_name", "purchase_id", "name", "street", "timestamp", "purchase_id_isnan"])]]
     shop_df = pd.get_dummies(shop_df)
 
     X = shop_df[shop_df.columns[~shop_df.columns.isin(
         ["event_type_BUY_PRODUCT", "event_type_VIEW_PRODUCT", "purchase_id_isnan", "timestamp"])]]
 
+    session_ids = X["session_id"]
+    X = X.drop('session_id', 1)
+
     flag = np.where(np.array(model.predict_proba(X))[:, 1] > 0.45, True, False)
     results = X[flag]
-    select_columns = ["session_id", "user_id", "product_id", "offered_discount", "price"]
+    select_columns = ["user_id", "product_id", "offered_discount", "price"]
     results = results[select_columns]
+    results = pd.merge(session_ids, results, left_index=True, right_index=True, how="inner").drop_duplicates()
 
     return render_template('run.html', data=results)
+
 
 if __name__ == '__main__':
     app.run()
