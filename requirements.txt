@@ -3,3 +3,4 @@ werkzeug~=1.0.1
 pandas
 xgboost
 scikit-learn
+gunicorn
