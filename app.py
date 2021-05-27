@@ -7,7 +7,8 @@ import pandas as pd
 import numpy as np
 from xgboost import XGBClassifier
 
-UPLOAD_FOLDER = r'C:\Users\Bindas\PycharmProjects\flaskProject\uploads'
+# UPLOAD_FOLDER = r'C:\Users\Bindas\PycharmProjects\flaskProject\uploads'
+UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
 ALLOWED_EXTENSIONS = {'jsonl'}
 
 app = Flask(__name__, template_folder='templates')
@@ -42,7 +43,7 @@ def upload_file():
 @app.route('/run')
 def run():
     # Use pickle to load in the pre-trained model.
-    with open(f'model/grid_sessions.pkl', 'rb') as f:
+    with open(os.path.join(os.getcwd(),'model/grid_sessions.pkl'), 'rb') as f:
         model = pickle.load(f)
 
     products = pd.read_json(os.path.join(UPLOAD_FOLDER, "products.jsonl"), lines=True)
