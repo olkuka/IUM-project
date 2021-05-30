@@ -1,8 +1,6 @@
-from flask import Flask, flash, request, redirect, url_for, render_template
-from flask import send_from_directory
+from flask import Flask
 import flask
 import pickle
-from werkzeug.utils import secure_filename
 import os
 import pandas as pd
 import numpy as np
@@ -13,7 +11,7 @@ from datetime import datetime
 UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
 ALLOWED_EXTENSIONS = {'jsonl'}
 
-# columns must be in the exact same orfer for the model to work
+# columns must be in the exact same order for the model to work
 LOGISTIC_REGRESSION_COLUMNS = ['user_id','product_id','price','discount_price',
  'category_path_Gry i konsole;Gry na konsole;Gry Xbox 360','category_path_Komputery;Monitory;Monitory LCD',
  'category_path_Sprzęt RTV;Video;Odtwarzacze DVD','category_path_Sprzęt RTV;Video;Telewizory i akcesoria;Anteny RTV',
@@ -62,7 +60,7 @@ def allowed_file(filename):
 @app.route('/', methods=['GET', 'POST'])
 def main():
     if flask.request.method == 'GET':
-        return flask.render_template('main.html', original_input={}, result="Please submit the values first")
+        return flask.render_template('main.html', original_input={}, result="Please submit the values first", data=get_logs().tail(5))
     if flask.request.method == 'POST':
         user_id = int(flask.request.form['user_id'])
         product_id = int(flask.request.form['product_id'])
@@ -92,29 +90,7 @@ def main():
         return flask.render_template('main.html',
                                      original_input={'User id': user_id,
                                                      'Product id': product_id, 'Offered discount': offered_discount, 'Variant': variant},
-                                     result=result)
-
-# @app.route('/run')
-# def run():
-#     # Use pickle to load in the pre-trained model.
-#     with open(os.path.join(os.getcwd(),'model/grid_sessions.pkl'), 'rb') as f:
-#         model = pickle.load(f)
-#
-#     X = shop_df[shop_df.columns[~shop_df.columns.isin(
-#         ["event_type_BUY_PRODUCT", "event_type_VIEW_PRODUCT", "purchase_id_isnan", "timestamp"])]]
-#
-#     session_ids = X["session_id"]
-#     X = X.drop('session_id', 1)
-#
-#     flag = np.where(np.array(model.predict_proba(X))[:, 1] > 0.45, True, False)
-#     results = X[flag]
-#     select_columns = ["user_id", "product_id", "offered_discount", "price"]
-#     results = results[select_columns]
-#     results = pd.merge(session_ids, results, left_index=True, right_index=True, how="inner").drop_duplicates()
-#     results.reset_index(inplace=True)
-#     results = results.drop("index", axis=1)
-#
-#     return render_template('run.html', data=results)
+                                     result=result, data=get_logs().tail(5))
 
 
 def predict(X, user_id):
@@ -171,14 +147,16 @@ def save(user_id, product_id, offered_discount, variant, algo_decision):
         'algorithm_decision': [algo_decision]
     }
     df = pd.DataFrame(data)
-    logs_path = os.path.join(UPLOAD_FOLDER, 'logs/logs.csv')
+    logs_path = os.path.join(os.getcwd(), 'logs/logs.csv')
     if os.path.exists(logs_path):
-        append_write = 'a'  # append if already exists
+        df.to_csv(logs_path,  mode='a', header=False, index=False)
     else:
-        append_write = 'w'  # make a new file if not
-    print(df)
-    print(append_write)
-    df.to_csv(logs_path,  mode='a+', header=False)
+        df.to_csv(logs_path, mode='w', header=True, index=False)
+
+
+def get_logs():
+    logs_path = os.path.join(os.getcwd(), 'logs/logs.csv')
+    return pd.read_csv(logs_path)
 
 
 if __name__ == '__main__':
