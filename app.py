@@ -53,17 +53,6 @@ users = pd.read_json(os.path.join(UPLOAD_FOLDER, "users.jsonl"), lines=True)
 users['variant'] = pd.util.hash_pandas_object(users['user_id']) % 2
 users['variant'].replace({0: "A", 1: "B"}, inplace=True)
 
-shop_df = sessions.merge(products, on="product_id", how="left")
-shop_df = shop_df.merge(users, on='user_id', how = 'left')
-shop_df["discount_price"] = (shop_df["price"] * shop_df["offered_discount"])
-shop_df = shop_df[shop_df.columns[~shop_df.columns.isin(["product_name", "purchase_id", "name", "street"])]]
-shop_df = pd.get_dummies(shop_df)
-shop_df_check = shop_df.copy()
-y_lr = shop_df_check["event_type_BUY_PRODUCT"]
-shop_df_check = shop_df_check[shop_df_check.columns[~shop_df_check.columns.isin(["event_type_BUY_PRODUCT", "event_type_VIEW_PRODUCT", "purchase_id_isnan", "timestamp"])]]
-shop_df_xgb = shop_df_check.copy()
-y_xgb = y_lr.copy()
-
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -94,7 +83,7 @@ def main():
                     result = "VIEW"
                 else:
                     result = "BUY"
-                # save(user_id, product_id, offered_discount, variant, result)
+                save(user_id, product_id, offered_discount, variant, result)
             else:
                 result = "There is no data for this product"
         else:
@@ -105,56 +94,27 @@ def main():
                                                      'Product id': product_id, 'Offered discount': offered_discount, 'Variant': variant},
                                      result=result)
 
-# def upload_file():
-#     if request.method == 'POST':
-#         # check if the post request has the file part
-#         if 'file' not in request.files:
-#             flash('No file part')
-#             return redirect(request.url)
-#         file = request.files['file']
-#         # if user does not select file, browser also
-#         # submit an empty part without filename
-#         if file.filename == '':
-#             flash('No selected file')
-#             return redirect(request.url)
-#         if file and allowed_file(file.filename):
-#             filename = secure_filename(file.filename)
-#             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-#             return redirect(request.url)
-#     return render_template('index.html')
-
-
-@app.route('/run')
-def run():
-    # Use pickle to load in the pre-trained model.
-    with open(os.path.join(os.getcwd(),'model/grid_sessions.pkl'), 'rb') as f:
-        model = pickle.load(f)
-
-    X = shop_df[shop_df.columns[~shop_df.columns.isin(
-        ["event_type_BUY_PRODUCT", "event_type_VIEW_PRODUCT", "purchase_id_isnan", "timestamp"])]]
-
-    session_ids = X["session_id"]
-    X = X.drop('session_id', 1)
-
-    flag = np.where(np.array(model.predict_proba(X))[:, 1] > 0.45, True, False)
-    results = X[flag]
-    select_columns = ["user_id", "product_id", "offered_discount", "price"]
-    results = results[select_columns]
-    results = pd.merge(session_ids, results, left_index=True, right_index=True, how="inner").drop_duplicates()
-    results.reset_index(inplace=True)
-    results = results.drop("index", axis=1)
-
-    return render_template('run.html', data=results)
-
-# # returns single prediction for given parameters (one row)
-# def ABtesting(given_user_id, model_lr, model_xgb):
-#     # return predictions for given parameters
-#     current_user_row = users[users['user_id'] == given_user_id]
+# @app.route('/run')
+# def run():
+#     # Use pickle to load in the pre-trained model.
+#     with open(os.path.join(os.getcwd(),'model/grid_sessions.pkl'), 'rb') as f:
+#         model = pickle.load(f)
 #
-#     if current_user_row['variant'] == 'A':
-#         return model_xgb.predict()
-#     else:
-#         return model_lr.predict()
+#     X = shop_df[shop_df.columns[~shop_df.columns.isin(
+#         ["event_type_BUY_PRODUCT", "event_type_VIEW_PRODUCT", "purchase_id_isnan", "timestamp"])]]
+#
+#     session_ids = X["session_id"]
+#     X = X.drop('session_id', 1)
+#
+#     flag = np.where(np.array(model.predict_proba(X))[:, 1] > 0.45, True, False)
+#     results = X[flag]
+#     select_columns = ["user_id", "product_id", "offered_discount", "price"]
+#     results = results[select_columns]
+#     results = pd.merge(session_ids, results, left_index=True, right_index=True, how="inner").drop_duplicates()
+#     results.reset_index(inplace=True)
+#     results = results.drop("index", axis=1)
+#
+#     return render_template('run.html', data=results)
 
 
 def predict(X, user_id):
@@ -162,7 +122,7 @@ def predict(X, user_id):
     variant = current_user["variant"].to_numpy()[0]
 
     # check the variant
-    if  variant == 'A':
+    if variant == 'A':
         X = X[LOGISTIC_REGRESSION_COLUMNS]
         model = load_model('model/model_lr.pkl')
     else:
