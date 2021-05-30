@@ -93,11 +93,11 @@ def predict(X, user_id):
 
     # check the variant
     if variant == 'A':
-        X = X[LOGISTIC_REGRESSION_COLUMNS]
-        model = load_model('model/model_lr.pkl')
-    else:
         X = X[XGB_COLUMNS]
         model = load_model('model/model_xgb.pkl')
+    else:
+        X = X[LOGISTIC_REGRESSION_COLUMNS]
+        model = load_model('model/model_lr.pkl')
     return model.predict(X), variant
 
 
@@ -150,7 +150,10 @@ def save(user_id, product_id, offered_discount, variant, algo_decision):
 
 def get_logs():
     logs_path = os.path.join(os.getcwd(), 'logs/logs.csv')
-    return pd.read_csv(logs_path)
+
+    if os.path.exists(logs_path):
+        return pd.read_csv(logs_path)
+    return pd.DataFrame()
 
 
 if __name__ == '__main__':
