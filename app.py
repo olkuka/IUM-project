@@ -8,8 +8,7 @@ from xgboost import XGBClassifier
 from datetime import datetime
 
 
-UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
-ALLOWED_EXTENSIONS = {'jsonl'}
+UPLOAD_FOLDER = os.path.join(os.getcwd(), "new_data")
 
 # columns must be in the exact same order for the model to work
 LOGISTIC_REGRESSION_COLUMNS = ['user_id','product_id','price','discount_price',
@@ -50,11 +49,6 @@ users = pd.read_json(os.path.join(UPLOAD_FOLDER, "users.jsonl"), lines=True)
 # hash user_id
 users['variant'] = pd.util.hash_pandas_object(users['user_id']) % 2
 users['variant'].replace({0: "A", 1: "B"}, inplace=True)
-
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @app.route('/', methods=['GET', 'POST'])

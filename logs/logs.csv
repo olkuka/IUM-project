@@ -6,3 +6,4 @@ time,user_id,product_id,offered_discount,variant,algorithm_decision
 30/05/2021 21:36:16,124,1233,10,A,BUY
 30/05/2021 21:36:27,150,1235,0,A,BUY
 30/05/2021 21:56:03,102,1033,10,A,VIEW
+30/05/2021 22:02:51,112,1244,10,A,BUY
