@@ -12,11 +12,10 @@ UPLOAD_FOLDER = os.path.join(os.getcwd(), "new_data")
 
 # columns must be in the exact same order for the model to work
 LOGISTIC_REGRESSION_COLUMNS = ['user_id','product_id','price','discount_price',
- 'category_path_Gry i konsole;Gry na konsole;Gry Xbox 360','category_path_Komputery;Monitory;Monitory LCD',
- 'category_path_Sprzęt RTV;Video;Odtwarzacze DVD','category_path_Sprzęt RTV;Video;Telewizory i akcesoria;Anteny RTV',
- 'category_path_Sprzęt RTV;Video;Telewizory i akcesoria;Okulary 3D','category_path_Telefony i akcesoria;Akcesoria telefoniczne;Zestawy głośnomówiące',
- 'category_path_Telefony i akcesoria;Telefony komórkowe','category_path_Telefony i akcesoria;Telefony stacjonarne',
- 'city_Gdynia','city_Kutno','city_Mielec','city_Radom','city_Warszawa']
+        'category_path_Gry i konsole;Gry komputerowe', 'category_path_Gry i konsole;Gry na konsole;Gry PlayStation3',
+        'category_path_Gry i konsole;Gry na konsole;Gry Xbox 360', 'category_path_Komputery;Monitory;Monitory LCD',
+        'category_path_Sprzęt RTV;Video;Telewizory i akcesoria;Okulary 3D', 'category_path_Telefony i akcesoria;Telefony stacjonarne',
+        'city_Kutno','city_Police','city_Radom','city_Warszawa']
 XGB_COLUMNS = ['user_id', 'product_id', 'offered_discount', 'price', 'discount_price',
        'category_path_Gry i konsole;Gry komputerowe',
        'category_path_Gry i konsole;Gry na konsole;Gry PlayStation3',
